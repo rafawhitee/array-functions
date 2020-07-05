@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -13,8 +14,28 @@ import java.util.stream.Stream;
 public abstract class ArrayFunctions implements Serializable {
 
 	private static final long serialVersionUID = 1L;
+	
+	public static List<Result> groupBy(List<?> mainList, String... fields) {
+		try {
+			List<Result> list = new ArrayList<Result>();
+			Map<List<?>, ?> map = groupByFields(mainList, fields);
+			if (map != null && map.size() > 0) {
+				Set<List<?>> keys = map.keySet();
+				if (keys != null && keys.size() > 0) {
+					keys.forEach(currentKey -> {
+						List<?> valuesOfCurrentKey = (List<?>) map.get(currentKey);
+						String description = createDescriptionToResult(currentKey, Result.INITIAL_DESCRIPTION_GROUPED_BY, fields);
+						list.add(new Result(description, valuesOfCurrentKey));
+					});
+				}
+			}
+			return list;
+		} catch (Exception e) {
+			return null;
+		}
+	}
 
-	public static Map<List<?>, ?> groupByFields(List<?> mainList, String... fields) throws Exception {
+	private static Map<List<?>, ?> groupByFields(List<?> mainList, String... fields) throws Exception {
 		Map<List<?>, ?> grouped = null;
 
 		// Validate the mainList and Fields
@@ -34,9 +55,10 @@ public abstract class ArrayFunctions implements Serializable {
 			// Pass a MainList to Stream
 			Stream<?> stream = mainList.stream();
 
-		    // Call createFunctionWithAllMethodsInvoked to create a Function with all methods invoked
+			// Call createFunctionWithAllMethodsInvoked to create a Function with all
+			// methods invoked
 			Function<Object, List<Object>> compositeKey = createFunctionWithAllMethodsInvoked(methods);
-			
+
 			// Use the collect of Stream to groupingBy compositeKey and the returns a List
 			grouped = stream.collect(Collectors.groupingBy(compositeKey, Collectors.toList()));
 
@@ -46,8 +68,28 @@ public abstract class ArrayFunctions implements Serializable {
 		return grouped;
 	}
 
-	// Create a @FunctionalInterface with all Methods Invoked by each element in mainList
-	private static Function<Object, List<Object>> createFunctionWithAllMethodsInvoked(List<Method> methods) {	
+	private static String createDescriptionToResult(List<?> keys, String initialDescription, String... fields) {
+		String str = initialDescription;
+		if (keys != null && fields != null) {
+			int keysSize = keys.size();
+			int fieldsSize = fields.length;
+			if (keysSize == fieldsSize && keysSize > 0) {
+				for (int i = 0; i < keys.size(); i++) {
+					String field = fields[i];
+					Object value = keys.get(i);
+					str = str + field + ": " + value;
+					if (!((i + 1) == keysSize)) {
+						str += ", ";
+					}
+				}
+			}
+		}
+		return str;
+	}
+
+	// Create a FunctionalInterface with all Methods Invoked by each element in
+	// mainList
+	private static Function<Object, List<Object>> createFunctionWithAllMethodsInvoked(List<Method> methods) {
 		Function<Object, List<Object>> compositeKey = obj -> {
 			List<Object> methodsInvokeds = new ArrayList<Object>();
 			for (Method currentMethod : methods) {
