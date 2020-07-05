@@ -8,13 +8,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public abstract class ArrayFunctions implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	
+
+	public static <T> List<T> filterBy(List<T> mainList, FilterBy... filters) {
+		try {
+			return filterByFields(mainList, filters);
+		} catch (Exception e) {
+			return null;
+		}
+	}
+
 	public static List<Result> groupBy(List<?> mainList, String... fields) {
 		try {
 			List<Result> list = new ArrayList<Result>();
@@ -24,7 +33,8 @@ public abstract class ArrayFunctions implements Serializable {
 				if (keys != null && keys.size() > 0) {
 					keys.forEach(currentKey -> {
 						List<?> valuesOfCurrentKey = (List<?>) map.get(currentKey);
-						String description = createDescriptionToResult(currentKey, Result.INITIAL_DESCRIPTION_GROUPED_BY, fields);
+						String description = createDescriptionToResult(currentKey,
+								Result.INITIAL_DESCRIPTION_GROUPED_BY, fields);
 						list.add(new Result(description, valuesOfCurrentKey));
 					});
 				}
@@ -33,6 +43,76 @@ public abstract class ArrayFunctions implements Serializable {
 		} catch (Exception e) {
 			return null;
 		}
+	}
+
+	private static <T> List<T> filterByFields(List<T> mainList, FilterBy... filters) throws Exception {
+		// Validate the mainList and Filters
+		boolean isMainListValid = isMainListValid(mainList);
+		boolean isFiltersValid = isFiltersValid(filters);
+
+		if (isMainListValid && isFiltersValid) {
+			List<FilterBy> listFilters = Arrays.asList(filters);
+			List<Predicate<T>> listPredicates = new ArrayList<Predicate<T>>();
+			
+			// For each object in Main List, do another for with all filters 
+			for(T genericObject : mainList) {
+				for(FilterBy currentFilter : listFilters) {
+					Predicate<T> predicate = getPredicate(genericObject, currentFilter);
+					listPredicates.add(predicate);
+				}
+			}
+			
+			// Reduce again listPredicates with an unique Predicate<T>
+			Stream<Predicate<T>> streamPredicate = listPredicates.stream();
+			Predicate<T> predicateReduce = streamPredicate.reduce(p -> true, Predicate::and);
+			
+			Stream<T> mainListStream = mainList.stream();
+			List<T> filtered = mainListStream.filter(predicateReduce).collect(Collectors.toList());
+			return filtered;
+			
+		}
+		
+		return null;
+
+	}
+
+	private static <T> Predicate<T> getPredicate(T genericObject, FilterBy filter) throws Exception {
+		String field = verifyIfExistsGet(filter.getField());
+		Method method = genericObject.getClass().getMethod(field);
+		List<Predicate<T>> allPredicatesWithValuesInFilter = new ArrayList<Predicate<T>>();
+
+		// Do the first Predicate, invoke of field != null
+		Predicate<T> predicateFieldNotNull = obj -> {
+			try {
+				return method.invoke(obj) != null;
+			} catch (Exception e) {
+				return false;
+			}
+		};
+
+		// Add the invoked predicateField != null in the list of return
+		allPredicatesWithValuesInFilter.add(predicateFieldNotNull);
+
+		// Now, for each Value in filter, do a new predicate comparing a Invoked Field with CurrentValue with method equals
+		filter.getValues().forEach(currentValue -> {
+			Predicate<T> predicateFieldEqualsValue = obj -> {
+                 try {
+                	 Object invoked = method.invoke(obj);
+                	 return invoked.equals(currentValue);
+                 }catch(Exception e) {
+                	 return false;
+                 }
+			};
+			// Add current Predicate in list
+			allPredicatesWithValuesInFilter.add(predicateFieldEqualsValue);
+		});
+		
+		// Now create a Unique Predicate<T> with reduce all predicates 
+		// created in allPredicatesWithValuesInFilter
+		Stream<Predicate<T>> streamPredicate = allPredicatesWithValuesInFilter.stream();
+		Predicate<T> predicateReduce = streamPredicate.reduce(p -> true, Predicate::and);
+
+		return predicateReduce;
 	}
 
 	private static Map<List<?>, ?> groupByFields(List<?> mainList, String... fields) throws Exception {
@@ -133,6 +213,14 @@ public abstract class ArrayFunctions implements Serializable {
 	private static boolean isFieldsValid(String... fields) throws Exception {
 		if (fields == null || (fields != null && fields.length == 0))
 			throw new Exception("None field to group");
+
+		return true;
+	}
+
+	// Validate the Array of class FilterBy
+	private static boolean isFiltersValid(FilterBy... filters) throws Exception {
+		if (filters == null || (filters != null && filters.length == 0))
+			throw new Exception("None filter to filter mainList");
 
 		return true;
 	}
