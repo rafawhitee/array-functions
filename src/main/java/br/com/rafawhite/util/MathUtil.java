@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
-public abstract class Util implements Serializable {
+public abstract class MathUtil implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	
@@ -48,7 +48,7 @@ public abstract class Util implements Serializable {
 	}
 
 	// Calculate the Percent
-	public static BigDecimal calcularPorcentagem(Number smaller, Number total) {
+	public static BigDecimal calculatePercentage(Number smaller, Number total) {
 		BigDecimal bigDivideResult = divide(smaller, total);
 		if (bigDivideResult != null) {
 			return bigDivideResult.multiply(new BigDecimal("100"));
