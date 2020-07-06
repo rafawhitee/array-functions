@@ -85,7 +85,6 @@ public abstract class ClassUtil implements Serializable {
 			Method method = objectClass.getMethod(name);
 			return method;
 		}catch(Exception e) {
-			e.printStackTrace();
 			return null;
 		}
 	}

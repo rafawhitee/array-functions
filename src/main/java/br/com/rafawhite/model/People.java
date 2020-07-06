@@ -10,17 +10,19 @@ public class People {
 	private int age;
 	private double weight;
 	private double height;
+	private boolean legalPerson;
 	
 	public People() {
 		populateId();
 	}
 	
-	public People(String name, int age, double weight, double height) {
+	public People(String name, int age, double weight, double height, boolean legalPerson) {
 		populateId();
 		this.name = name;
 		this.age = age;
 		this.weight = weight;
-		this.height =height;
+		this.height = height;
+		this.legalPerson = legalPerson;
 	}
 	
 	private void populateId() {
@@ -66,11 +68,18 @@ public class People {
 	public void setHeight(double height) {
 		this.height = height;
 	}
+	
+	public boolean isLegalPerson() {
+		return legalPerson;
+	}
+
+	public void setLegalPerson(boolean legalPerson) {
+		this.legalPerson = legalPerson;
+	}
 
 	@Override
 	public String toString() {
-		return "People [id=" + id + ", name=" + name + ", age=" + age + ", weight=" + weight + ", height=" + height
-				+ "]";
+		return id + ", name=" + name + ", age=" + age + ", weight=" + weight + ", height=" + height;
 	}
 	
 }
