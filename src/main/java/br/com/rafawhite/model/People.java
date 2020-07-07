@@ -86,7 +86,8 @@ public class People {
 
 	@Override
 	public String toString() {
-		return id + ", name=" + name + ", age=" + age + ", weight=" + weight + ", height=" + height;
+		String profileName = (profile != null) ? profile.getDescription() : "";
+		return id + " " + profileName + ", name=" + name + ", age=" + age + ", weight=" + weight + ", height=" + height;
 	}
 
 	public Profile getProfile() {
