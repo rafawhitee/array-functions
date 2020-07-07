@@ -83,6 +83,13 @@ public class People {
 	public void setLegalPerson(boolean legalPerson) {
 		this.legalPerson = legalPerson;
 	}
+	
+	public String getGroupByMethod() {
+		if(profile != null) {
+			return age + "/" + profile.getDescription();
+		}
+		return null;
+	}
 
 	@Override
 	public String toString() {

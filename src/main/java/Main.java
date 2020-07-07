@@ -5,6 +5,7 @@ import br.com.rafawhite.model.People;
 import br.com.rafawhite.model.Profile;
 import br.com.rafawhite.util.ArrayUtil;
 import br.com.rafawhite.util.FilterBy;
+import br.com.rafawhite.util.Result;
 
 public class Main {
 
@@ -31,15 +32,35 @@ public class Main {
 		People p5 = new People("Manoel", 91, 103.1, 1.84, false);
 		p5.setProfile(user);
 		
-		People p6 = new People("?", 0, 0, 0, false);
+		People p6 = new People("", 0, 0, 0, false);
 		p6.setProfile(anonymous);
 		
-		List<People> peoples = Arrays.asList(p1, p2, p3, p4, p5, p6);
-
-		FilterBy filterProfileUser = new FilterBy("profile.description", "Admin", "Anonymous");	
-		List<People> resultsFiltered = (List<People>) ArrayUtil.filterBy(peoples, filterProfileUser);
-		System.out.println(resultsFiltered);
+		People p7 = new People("Ferreira", 31, 92.4, 1.93, false);
+		p7.setProfile(user);
 		
+		People p8 = new People("Dani", 21, 53, 1.61, false);
+		p8.setProfile(user);
+		
+		People p9 = new People("Leandro", 12, 39.2, 1.53, false);
+		p9.setProfile(user);
+		
+		People p10 = new People("Rebekah", 23, 57.1, 1.63, false);
+		p10.setProfile(admin);
+		
+		People p11 = new People("Admin 2222222", 21, 85.2, 1.85, false);
+		p11.setProfile(admin);
+		
+		List<People> peoples = Arrays.asList(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11);
+
+//		FilterBy filterProfileUser = new FilterBy("profile.description", "Admin", "Anonymous");	
+//		List<People> resultsFiltered = (List<People>) ArrayUtil.filterBy(peoples, filterProfileUser);
+//		System.out.println(resultsFiltered);
+		
+		List<Result> groupedByProfile = ArrayUtil.groupBy(peoples, "groupByMethod");
+		List<Result> groupedByAge = ArrayUtil.groupBy(peoples, "age");
+		
+		System.out.println(groupedByProfile);
+		System.out.println(groupedByAge);
 
 	}
 

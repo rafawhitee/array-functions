@@ -76,6 +76,17 @@ public abstract class ClassUtil implements Serializable {
 		}
 		return null;
 	}
+	
+	public static Object invokeMethod(Method method, Object genericObject, Object... parametersToInvoke)
+			throws Exception {
+		if (method != null) {
+			if (parametersToInvoke != null && parametersToInvoke.length > 0) {
+				return method.invoke(genericObject, parametersToInvoke);
+			}
+			return method.invoke(genericObject);
+		}
+		return null;
+	}
 
 	public static Method getMethodByName(String name, Object genericObject) {
 		if (genericObject != null)
@@ -110,6 +121,28 @@ public abstract class ClassUtil implements Serializable {
 			return first.toUpperCase() + word.substring(1);
 		}
 		return null;
+	}
+	
+	public static boolean methodBelongsClass(Method method, Class<?> objectClass) {
+		List<Method> methods = getClassMethods(objectClass);
+		for(Method currentMethod : methods) {
+			if(currentMethod.equals(method)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public static boolean methodBelongsClass(Method method, Object object) {
+		return methodBelongsClass(method, object.getClass());
+	}
+	
+	public static List<Method> getClassMethods(Object object){
+		return getClassMethods(object.getClass());
+	}
+	
+	public static List<Method> getClassMethods(Class<?> objectClass){
+		return Arrays.asList(objectClass.getMethods());
 	}
 
 	// If name method contains . is because are a Chain of Method
