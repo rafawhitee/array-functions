@@ -6,11 +6,18 @@ public class People {
 	private static int LAST_ID = 0;
 	
 	private int id;
+	
 	private String name;
+	
 	private int age;
+	
 	private double weight;
+	
 	private double height;
+	
 	private boolean legalPerson;
+	
+	private Profile profile;
 	
 	public People() {
 		populateId();
@@ -80,6 +87,14 @@ public class People {
 	@Override
 	public String toString() {
 		return id + ", name=" + name + ", age=" + age + ", weight=" + weight + ", height=" + height;
+	}
+
+	public Profile getProfile() {
+		return profile;
+	}
+
+	public void setProfile(Profile profile) {
+		this.profile = profile;
 	}
 	
 }

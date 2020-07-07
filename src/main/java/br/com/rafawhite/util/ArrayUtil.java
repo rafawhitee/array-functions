@@ -15,28 +15,27 @@ import java.util.stream.Stream;
 public abstract class ArrayUtil implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	public static final String AND = "AND";
 	public static final String OR = "AND";
 	public static final String COMMA_SEPARATOR = ",";
-    
-	public static <T> List<T> filterBy(List<T> mainList, List<FilterBy> filters) {
+
+	public static List<?> filterBy(List<?> mainList, List<FilterBy> filters) {
 		try {
 			return filterByFields(mainList, filters);
 		} catch (Exception e) {
 			return null;
 		}
 	}
-	
+
 	// Overloading of filterBy
-	public static <T> List<T> filterBy(List<T> mainList, FilterBy... filters) {
+	public static List<?> filterBy(List<?> mainList, FilterBy... filters) {
 		try {
 			return filterByFields(mainList, filters);
 		} catch (Exception e) {
 			return null;
 		}
 	}
-	
 
 	public static List<Result> groupBy(List<?> mainList, String... fields) {
 		try {
@@ -60,28 +59,29 @@ public abstract class ArrayUtil implements Serializable {
 		}
 	}
 
-	private static <T> List<T> filterByFields(List<T> mainList, List<FilterBy> filters) throws Exception {
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private static List<?> filterByFields(List<?> mainList, List<FilterBy> filters) throws Exception {
 		// Validate the mainList and Filters
 		boolean isMainListValid = isMainListValid(mainList);
 		boolean isFiltersValid = isFiltersValid(filters);
 
 		if (isMainListValid && isFiltersValid) {
-			List<Predicate<T>> listPredicates = new ArrayList<Predicate<T>>();
+			List<Predicate<?>> listPredicates = new ArrayList<Predicate<?>>();
 
 			// For each object in Main List, do another for with all filters
-			for (T genericObject : mainList) {
+			for (Object genericObject : mainList) {
 				for (FilterBy currentFilter : filters) {
-					Predicate<T> predicate = getPredicate(genericObject, currentFilter);
+					Predicate<?> predicate = getPredicate(genericObject, currentFilter);
 					listPredicates.add(predicate);
 				}
 			}
 
 			// Reduce again listPredicates with an unique Predicate<T>
-			Stream<Predicate<T>> streamPredicate = listPredicates.stream();
-			Predicate<T> predicateReduce = streamPredicate.reduce(p -> true, Predicate::and);
+			Stream<Predicate<?>> streamPredicate = listPredicates.stream();
+			Predicate predicateReduce = streamPredicate.reduce(p -> true, Predicate::and);
 
-			Stream<T> mainListStream = mainList.stream();
-			List<T> filtered = mainListStream.filter(predicateReduce).collect(Collectors.toList());
+			Stream<?> mainListStream = mainList.stream();
+			List<?> filtered = (List<?>) mainListStream.filter(predicateReduce).collect(Collectors.toList());
 			return filtered;
 
 		}
@@ -89,33 +89,72 @@ public abstract class ArrayUtil implements Serializable {
 		return null;
 
 	}
-	
+
 	// Overloading of filterByFields
-	private static <T> List<T> filterByFields(List<T> mainList, FilterBy... filters) throws Exception {
+	private static List<?> filterByFields(List<?> mainList, FilterBy... filters) throws Exception {
 		return filterByFields(mainList, Arrays.asList(filters));
 	}
 
-	private static <T> Predicate<T> getPredicate(T genericObject, FilterBy filter) throws Exception {
-		String field = ClassUtil.verifyIfExistsGet(filter.getField(), genericObject);
-		Method method = ClassUtil.getMethodByName(field, genericObject);
+	private static Predicate<?> getPredicate(Object genericObject, FilterBy filter) throws Exception {
+		final List<Method> methods = ClassUtil.getChainGetters(filter.getField(), genericObject.getClass());
 
 		// Lists to do OR Clause
-		List<Predicate<T>> predicatesToDoOrClause = new ArrayList<Predicate<T>>();
+		List<Predicate<?>> predicatesToDoOrClause = new ArrayList<Predicate<?>>();
 
 		// For each Value in filter, do a new predicate comparing a Invoked Field
 		// with CurrentValue with method equals
 		for (Object currentValue : filter.getValues()) {
-			Predicate<T> predicateFieldEqualsValue = (obj) -> {
-				try {
-					Object invoked = method.invoke(obj);
-					if(invoked != null)
-						return invoked.equals(currentValue);
-					
-					return false;
-				} catch (Exception e) {
-					e.printStackTrace();
-					return false;
+
+			// Predicate to check equals of last method on List<Method> methods
+			Predicate<?> predicateFieldEqualsValue = (obj) -> {
+
+				// Start with the parameter Obj
+				Object penultimateInvoked = obj;
+				
+				// Start lastMethod with null
+				Method lastMethod = null;
+
+				int count = 0;
+				// Do a for each in Methods
+				for (final Method currentMethod : methods) {
+					try {
+						// Invoke the current
+						Object currentInvoked = currentMethod.invoke(penultimateInvoked);
+						
+						// Check if the invoke is != null
+						if (currentInvoked != null) {
+							// Is is != null, check the count if count+1 != methods.size()
+		                    // Because penultimateInvoked can't be the last invoked
+							if((count+1) != methods.size()) {
+								penultimateInvoked = currentInvoked;
+							}
+							// The method has to be the Last
+							lastMethod = currentMethod;
+						}
+						
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+					count++;
 				}
+
+				// If last Method and penultimateInvoked same != null
+				if (lastMethod != null && penultimateInvoked != null) {
+					try {
+						// Check invoke LastMethod with penultimateInvoked if equals currentValue 
+						// of FIRST FOR EACH = for (Object currentValue : filter.getValues())
+						Object invokeToCheck = lastMethod.invoke(penultimateInvoked);
+						if (invokeToCheck != null && invokeToCheck.equals(currentValue)) {
+							return true;
+						}
+						
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+
+				return false;
+
 			};
 
 			// Add current Predicate in list
@@ -123,8 +162,8 @@ public abstract class ArrayUtil implements Serializable {
 		}
 
 		// Reduce in a Unique Predicate<T>
-		Stream<Predicate<T>> streamPredicateOr = predicatesToDoOrClause.stream();
-		Predicate<T> predicateReduceOr = streamPredicateOr.reduce(p -> false, Predicate::or);
+		Stream<Predicate<?>> streamPredicateOr = predicatesToDoOrClause.stream();
+		Predicate<?> predicateReduceOr = streamPredicateOr.reduce(p -> false, Predicate::or);
 
 		return predicateReduceOr;
 	}
@@ -162,7 +201,8 @@ public abstract class ArrayUtil implements Serializable {
 		return grouped;
 	}
 
-	private static String createDescriptionToResult(List<?> keys, String initialDescription, String separator, String... fields) {
+	private static String createDescriptionToResult(List<?> keys, String initialDescription, String separator,
+			String... fields) {
 		String str = initialDescription;
 		if (keys != null && fields != null) {
 			int keysSize = keys.size();
