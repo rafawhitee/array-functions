@@ -1,11 +1,11 @@
 import java.util.Arrays;
 import java.util.List;
 
+import br.com.rafawhite.dto.FilterBy;
+import br.com.rafawhite.enums.ComparatorType;
 import br.com.rafawhite.model.People;
 import br.com.rafawhite.model.Profile;
 import br.com.rafawhite.util.ArrayUtil;
-import br.com.rafawhite.util.ComparatorType;
-import br.com.rafawhite.util.FilterBy;
 
 public class Main {
 
@@ -52,7 +52,7 @@ public class Main {
 		
 		List<People> peoples = Arrays.asList(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11);
 
-		FilterBy filterProfileUser = new FilterBy("age", ComparatorType.GreaterThanOrEquals, "21");	
+		FilterBy filterProfileUser = new FilterBy("age", ComparatorType.GreaterThan, 21);	
 		List<People> resultsFiltered = null;
 		try {
 			resultsFiltered = (List<People>) ArrayUtil.filterByFields(peoples, filterProfileUser);

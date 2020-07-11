@@ -12,6 +12,13 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import br.com.rafawhite.dto.FilterBy;
+import br.com.rafawhite.dto.GroupResult;
+import br.com.rafawhite.factory.ComparatorFactory;
+import br.com.rafawhite.factory.ValidatorFactory;
+import br.com.rafawhite.interfaces.Comparator;
+import br.com.rafawhite.interfaces.Validator;
+
 public abstract class ArrayUtil implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -21,7 +28,9 @@ public abstract class ArrayUtil implements Serializable {
 	public static final String COMMA_SEPARATOR = ",";
 
 	// Intermediate Method
-	//
+	// Do the groupByFields that returns a Map<List>?, ?>
+	// Get this return Map and parse do List<GroupResult> with a Description and
+	// List<?> values
 	public static List<GroupResult> groupBy(List<?> mainList, String... fields) {
 		try {
 			List<GroupResult> list = new ArrayList<GroupResult>();
@@ -131,7 +140,8 @@ public abstract class ArrayUtil implements Serializable {
 						Object invokeToCheck = lastMethod.invoke(penultimateInvoked);
 
 						// Compare currentValue, ComparatorType and InvokedValue
-						boolean compare = useComparatorInvokeWithCurrentValue(currentValue, invokeToCheck, filter);
+						Comparator comparator = ComparatorFactory.create(filter);
+						boolean compare = comparator.compare(currentValue, invokeToCheck);
 						return compare;
 
 					} catch (Exception e) {
@@ -152,47 +162,6 @@ public abstract class ArrayUtil implements Serializable {
 		Predicate<?> predicateReduceOr = streamPredicateOr.reduce(p -> false, Predicate::or);
 
 		return predicateReduceOr;
-	}
-
-	// Use the comparator to compare currentValue and Invoked
-	private static boolean useComparatorInvokeWithCurrentValue(Object currentValue, Object invoked, FilterBy filter) {
-		switch (filter.getComparator()) {
-		case Equals:
-			return invoked.equals(currentValue);
-
-		case GreaterThan: {
-			double currentDoubleValue = parseObjectToDouble(currentValue).doubleValue();
-			double invokedDouble = parseObjectToDouble(invoked).doubleValue();
-			return invokedDouble > currentDoubleValue;
-		}
-
-		case LessThan: {
-			double currentDoubleValue = parseObjectToDouble(currentValue).doubleValue();
-			double invokedDouble = parseObjectToDouble(invoked).doubleValue();
-			return invokedDouble < currentDoubleValue;
-		}
-
-		case GreaterThanOrEquals: {
-			double currentDoubleValue = parseObjectToDouble(currentValue).doubleValue();
-			double invokedDouble = parseObjectToDouble(invoked).doubleValue();
-			return invokedDouble >= currentDoubleValue;
-		}
-
-		case LessThanOrEquals: {
-			double currentDoubleValue = parseObjectToDouble(currentValue).doubleValue();
-			double invokedDouble = parseObjectToDouble(invoked).doubleValue();
-			return invokedDouble <= currentDoubleValue;
-		}
-		}
-		return false;
-	}
-
-	// Receive a Object from Parameter and returns Double value
-	private static Double parseObjectToDouble(Object obj) {
-		if (obj != null) {
-			return Double.valueOf(obj.toString());
-		}
-		return null;
 	}
 
 	// Do the grouping
@@ -310,7 +279,8 @@ public abstract class ArrayUtil implements Serializable {
 		// Do a for to valid each Filter
 		// Valid the values with ComparatorType
 		for (FilterBy filter : filters) {
-			boolean currentFilterIsValid = filter.valuesAreValidAccordingComparatorType();
+			Validator currentValidator = ValidatorFactory.getValidator(filter);
+			boolean currentFilterIsValid = currentValidator.validate(filter);
 			if (!currentFilterIsValid) {
 				throw new Exception("The filter " + filter.getField() + " with comparator "
 						+ filter.getComparator().getType() + " is not valid");

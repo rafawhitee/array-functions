@@ -1,8 +1,10 @@
-package br.com.rafawhite.util;
+package br.com.rafawhite.dto;
 
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
+
+import br.com.rafawhite.enums.ComparatorType;
 
 public class FilterBy implements Serializable {
 
@@ -60,27 +62,47 @@ public class FilterBy implements Serializable {
 	public void setComparator(ComparatorType comparator) {
 		this.comparator = comparator;
 	}
-
-	// Do a for in VALUES
-	// Check if ComparatorType is Number Type
-	// If is, the values required to be Number too
-	public boolean valuesAreValidAccordingComparatorType() {
-		boolean areValid = true;
-		boolean comparatorIsTypeNumber = comparatorTypeIsNumber();
-		if (values != null && values.size() > 0) {
-			for (Object currentObj : values) {
-				if (comparatorIsTypeNumber) {
-					if (!(currentObj instanceof Number)) {
-						areValid = false;
-					}
+	
+	public boolean firstValueIsNumber() {
+		if(values != null && values.size() > 0) {
+			return (values.get(0) instanceof Number);
+		}
+		return false;
+	}
+	
+	public boolean firstValueIsString() {
+		if(values != null && values.size() > 0) {
+			return (values.get(0) instanceof String);
+		}
+		return false;
+	}
+	
+	// Check if All Values are Number instance
+	public boolean valuesAreNumber() {
+		if(values != null && values.size() > 0) {
+			for(Object obj : values) {
+				if(!(obj instanceof Number)) {
+					return false;
 				}
 			}
 		}
-		return areValid;
+		return true;
+	}
+	
+	// Check if All Values are String instance
+	public boolean valuesAreString() {
+		if(values != null && values.size() > 0) {
+			for(Object obj : values) {
+				if(!(obj instanceof String)) {
+					return false;
+				}
+			}
+		}
+		return true;
 	}
 
 	// Return true if ComparatorType is comparator > , < , >= or <=
-	private boolean comparatorTypeIsNumber() {
+	public boolean comparatorTypeIsNumber() {
 		if (comparator.equals(ComparatorType.GreaterThan) || comparator.equals(ComparatorType.GreaterThanOrEquals)
 				|| comparator.equals(ComparatorType.LessThan) || comparator.equals(ComparatorType.LessThanOrEquals))
 			return true;

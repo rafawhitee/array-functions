@@ -1,6 +1,6 @@
-package br.com.rafawhite.util;
+package br.com.rafawhite.enums;
 
-
+// Types to Comparator Used on FilterBy
 public enum ComparatorType {
 
 	Equals("Equals"), 

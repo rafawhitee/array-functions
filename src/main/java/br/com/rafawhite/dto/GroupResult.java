@@ -1,4 +1,4 @@
-package br.com.rafawhite.util;
+package br.com.rafawhite.dto;
 
 import java.io.Serializable;
 import java.util.ArrayList;
