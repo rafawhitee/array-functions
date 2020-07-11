@@ -10,33 +10,33 @@ public class FilterBy implements Serializable {
 
 	// Field to do Get
 	private String field;
-	
+
 	// Comparator Type (equals, greaterThan, lessThan...)
 	private ComparatorType comparator;
-	
+
 	// List of values to use Comparator (with OR Clause)
 	private List<Object> values;
-	
-    // Unique Constructor
+
+	// Unique Constructor
 	public FilterBy(String field, ComparatorType comparator, Object... values) {
 		this.field = field;
 		this.comparator = comparator;
 		setFields(values);
 	}
-	
+
 	private void setFields(Object... values) {
 		boolean isNotEmpty = valuesFromParameterIsNotEmpty(values);
-		if(isNotEmpty)
+		if (isNotEmpty)
 			setValues(Arrays.asList(values));
 	}
-	
+
 	private boolean valuesFromParameterIsNotEmpty(Object... values) {
 		if (values != null && values.length > 0)
 			return true;
 
 		return false;
 	}
-	
+
 	public String getField() {
 		return field;
 	}
@@ -60,31 +60,31 @@ public class FilterBy implements Serializable {
 	public void setComparator(ComparatorType comparator) {
 		this.comparator = comparator;
 	}
-	
+
 	// Do a for in VALUES
 	// Check if ComparatorType is Number Type
 	// If is, the values required to be Number too
 	public boolean valuesAreValidAccordingComparatorType() {
 		boolean areValid = true;
-		if(values != null && values.size() > 0) {
-			for(Object currentObj : values) {
-				boolean comparatorIsTypeNumber = comparatorTypeIsNumber();
-				if(comparatorIsTypeNumber) {
-					if(!(currentObj instanceof Number)){
+		boolean comparatorIsTypeNumber = comparatorTypeIsNumber();
+		if (values != null && values.size() > 0) {
+			for (Object currentObj : values) {
+				if (comparatorIsTypeNumber) {
+					if (!(currentObj instanceof Number)) {
 						areValid = false;
 					}
 				}
-			}	
+			}
 		}
 		return areValid;
 	}
-	
+
 	// Return true if ComparatorType is comparator > , < , >= or <=
 	private boolean comparatorTypeIsNumber() {
-		if(comparator.equals(ComparatorType.GreaterThan) || comparator.equals(ComparatorType.GreaterThanOrEquals) 
+		if (comparator.equals(ComparatorType.GreaterThan) || comparator.equals(ComparatorType.GreaterThanOrEquals)
 				|| comparator.equals(ComparatorType.LessThan) || comparator.equals(ComparatorType.LessThanOrEquals))
 			return true;
-		
+
 		return false;
 	}
 
