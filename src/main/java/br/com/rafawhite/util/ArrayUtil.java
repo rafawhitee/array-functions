@@ -20,26 +20,11 @@ public abstract class ArrayUtil implements Serializable {
 	public static final String OR = "AND";
 	public static final String COMMA_SEPARATOR = ",";
 
-	public static List<?> filterBy(List<?> mainList, List<FilterBy> filters) {
+	// Intermediate Method
+	//
+	public static List<GroupResult> groupBy(List<?> mainList, String... fields) {
 		try {
-			return filterByFields(mainList, filters);
-		} catch (Exception e) {
-			return null;
-		}
-	}
-
-	// Overloading of filterBy
-	public static List<?> filterBy(List<?> mainList, FilterBy... filters) {
-		try {
-			return filterByFields(mainList, filters);
-		} catch (Exception e) {
-			return null;
-		}
-	}
-
-	public static List<Result> groupBy(List<?> mainList, String... fields) {
-		try {
-			List<Result> list = new ArrayList<Result>();
+			List<GroupResult> list = new ArrayList<GroupResult>();
 			Map<List<?>, ?> map = groupByFields(mainList, fields);
 			if (map != null && map.size() > 0) {
 				Set<List<?>> keys = map.keySet();
@@ -47,8 +32,8 @@ public abstract class ArrayUtil implements Serializable {
 					keys.forEach(currentKey -> {
 						List<?> valuesOfCurrentKey = (List<?>) map.get(currentKey);
 						String description = createDescriptionToResult(currentKey,
-								Result.INITIAL_DESCRIPTION_GROUPED_BY, COMMA_SEPARATOR, fields);
-						list.add(new Result(description, valuesOfCurrentKey));
+								GroupResult.INITIAL_DESCRIPTION_GROUPED_BY, COMMA_SEPARATOR, fields);
+						list.add(new GroupResult(description, valuesOfCurrentKey));
 					});
 				}
 			}
@@ -60,7 +45,7 @@ public abstract class ArrayUtil implements Serializable {
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private static List<?> filterByFields(List<?> mainList, List<FilterBy> filters) throws Exception {
+	public static List<?> filterByFields(List<?> mainList, List<FilterBy> filters) throws Exception {
 		// Validate the mainList and Filters
 		boolean isMainListValid = isMainListValid(mainList);
 		boolean isFiltersValid = isFiltersValid(filters);
@@ -91,7 +76,7 @@ public abstract class ArrayUtil implements Serializable {
 	}
 
 	// Overloading of filterByFields
-	private static List<?> filterByFields(List<?> mainList, FilterBy... filters) throws Exception {
+	public static List<?> filterByFields(List<?> mainList, FilterBy... filters) throws Exception {
 		return filterByFields(mainList, Arrays.asList(filters));
 	}
 
@@ -110,7 +95,7 @@ public abstract class ArrayUtil implements Serializable {
 
 				// Start with the parameter Obj
 				Object penultimateInvoked = obj;
-				
+
 				// Start lastMethod with null
 				Method lastMethod = null;
 
@@ -120,18 +105,18 @@ public abstract class ArrayUtil implements Serializable {
 					try {
 						// Invoke the current
 						Object currentInvoked = currentMethod.invoke(penultimateInvoked);
-						
+
 						// Check if the invoke is != null
 						if (currentInvoked != null) {
 							// Is is != null, check the count if count+1 != methods.size()
-		                    // Because penultimateInvoked can't be the last invoked
-							if((count+1) != methods.size()) {
+							// Because penultimateInvoked can't be the last invoked
+							if ((count + 1) != methods.size()) {
 								penultimateInvoked = currentInvoked;
 							}
 							// The method has to be the Last
 							lastMethod = currentMethod;
 						}
-						
+
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
@@ -141,13 +126,14 @@ public abstract class ArrayUtil implements Serializable {
 				// If last Method and penultimateInvoked same != null
 				if (lastMethod != null && penultimateInvoked != null) {
 					try {
-						// Check invoke LastMethod with penultimateInvoked if equals currentValue 
+						// Check invoke LastMethod with penultimateInvoked if equals currentValue
 						// of FIRST FOR EACH = for (Object currentValue : filter.getValues())
 						Object invokeToCheck = lastMethod.invoke(penultimateInvoked);
-						if (invokeToCheck != null && invokeToCheck.equals(currentValue)) {
-							return true;
-						}
-						
+
+						// Compare currentValue, ComparatorType and InvokedValue
+						boolean compare = useComparatorInvokeWithCurrentValue(currentValue, invokeToCheck, filter);
+						return compare;
+
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
@@ -168,6 +154,48 @@ public abstract class ArrayUtil implements Serializable {
 		return predicateReduceOr;
 	}
 
+	// Use the comparator to compare currentValue and Invoked
+	private static boolean useComparatorInvokeWithCurrentValue(Object currentValue, Object invoked, FilterBy filter) {
+		switch (filter.getComparator()) {
+		case Equals:
+			return invoked.equals(currentValue);
+
+		case GreaterThan: {
+			double currentDoubleValue = parseObjectToDouble(currentValue).doubleValue();
+			double invokedDouble = parseObjectToDouble(invoked).doubleValue();
+			return invokedDouble > currentDoubleValue;
+		}
+
+		case LessThan: {
+			double currentDoubleValue = parseObjectToDouble(currentValue).doubleValue();
+			double invokedDouble = parseObjectToDouble(invoked).doubleValue();
+			return invokedDouble < currentDoubleValue;
+		}
+
+		case GreaterThanOrEquals: {
+			double currentDoubleValue = parseObjectToDouble(currentValue).doubleValue();
+			double invokedDouble = parseObjectToDouble(invoked).doubleValue();
+			return invokedDouble >= currentDoubleValue;
+		}
+
+		case LessThanOrEquals: {
+			double currentDoubleValue = parseObjectToDouble(currentValue).doubleValue();
+			double invokedDouble = parseObjectToDouble(invoked).doubleValue();
+			return invokedDouble <= currentDoubleValue;
+		}
+		}
+		return false;
+	}
+
+	// Receive a Object from Parameter and returns Double value
+	private static Double parseObjectToDouble(Object obj) {
+		if (obj != null) {
+			return Double.valueOf(obj.toString());
+		}
+		return null;
+	}
+
+	// Do the grouping
 	private static Map<List<?>, ?> groupByFields(List<?> mainList, String... fields) throws Exception {
 		Map<List<?>, ?> grouped = null;
 
@@ -201,6 +229,7 @@ public abstract class ArrayUtil implements Serializable {
 		return grouped;
 	}
 
+	// Create description to GroupResult
 	private static String createDescriptionToResult(List<?> keys, String initialDescription, String separator,
 			String... fields) {
 		String str = initialDescription;
@@ -255,6 +284,8 @@ public abstract class ArrayUtil implements Serializable {
 		return methods;
 	}
 
+	/* VALIDATORS */
+
 	// Validate the mainList
 	private static boolean isMainListValid(List<?> mainList) throws Exception {
 		if (mainList == null || (mainList != null && mainList.isEmpty()))
@@ -275,6 +306,16 @@ public abstract class ArrayUtil implements Serializable {
 	private static boolean isFiltersValid(List<FilterBy> filters) throws Exception {
 		if (filters == null || (filters != null && filters.size() == 0))
 			throw new Exception("None filter to filter mainList");
+
+		// Do a for to valid each Filter
+		// Valid the values with ComparatorType
+		for (FilterBy filter : filters) {
+			boolean currentFilterIsValid = filter.valuesAreValidAccordingComparatorType();
+			if (!currentFilterIsValid) {
+				throw new Exception("The filter " + filter.getField() + " with comparator "
+						+ filter.getComparator().getType() + " is not valid");
+			}
+		}
 
 		return true;
 	}

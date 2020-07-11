@@ -15,7 +15,7 @@ public class People {
 	
 	private double height;
 	
-	private boolean legalPerson;
+	private boolean active;
 	
 	private Profile profile;
 	
@@ -23,13 +23,13 @@ public class People {
 		populateId();
 	}
 	
-	public People(String name, int age, double weight, double height, boolean legalPerson) {
+	public People(String name, int age, double weight, double height, boolean active) {
 		populateId();
 		this.name = name;
 		this.age = age;
 		this.weight = weight;
 		this.height = height;
-		this.legalPerson = legalPerson;
+		this.active = active;
 	}
 	
 	private void populateId() {
@@ -75,15 +75,7 @@ public class People {
 	public void setHeight(double height) {
 		this.height = height;
 	}
-	
-	public boolean isLegalPerson() {
-		return legalPerson;
-	}
-
-	public void setLegalPerson(boolean legalPerson) {
-		this.legalPerson = legalPerson;
-	}
-	
+		
 	public String getGroupByMethod() {
 		if(profile != null) {
 			return age + "/" + profile.getDescription();
@@ -103,6 +95,14 @@ public class People {
 
 	public void setProfile(Profile profile) {
 		this.profile = profile;
+	}
+
+	public boolean isActive() {
+		return active;
+	}
+
+	public void setActive(boolean active) {
+		this.active = active;
 	}
 	
 }

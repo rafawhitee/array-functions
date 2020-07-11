@@ -4,26 +4,25 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Result implements Serializable {
+public class GroupResult implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	
 	public static final String INITIAL_DESCRIPTION_GROUPED_BY = "Grouped by ";
-	public static final String INITIAL_DESCRIPTION_FILTERED_BY = "Filtered by ";
 
 	private String description;
 	private List<?> values;
 	
-	public Result() {
+	public GroupResult() {
 		initializeList();
 	}
 	
-	public Result(String description) {
+	public GroupResult(String description) {
 		this.description = description;
 		initializeList();
 	}
 
-	public Result(String description, List<?> values) {
+	public GroupResult(String description, List<?> values) {
 		this.description = description;
 		this.values = values;
 	}
@@ -70,7 +69,7 @@ public class Result implements Serializable {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Result other = (Result) obj;
+		GroupResult other = (GroupResult) obj;
 		if (description == null) {
 			if (other.description != null)
 				return false;

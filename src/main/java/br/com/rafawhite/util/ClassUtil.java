@@ -76,7 +76,7 @@ public abstract class ClassUtil implements Serializable {
 		}
 		return null;
 	}
-	
+
 	public static Object invokeMethod(Method method, Object genericObject, Object... parametersToInvoke)
 			throws Exception {
 		if (method != null) {
@@ -89,10 +89,7 @@ public abstract class ClassUtil implements Serializable {
 	}
 
 	public static Method getMethodByName(String name, Object genericObject) {
-		if (genericObject != null)
-			return getMethodByName(name, genericObject.getClass());
-
-		return null;
+		return getMethodByName(name, genericObject.getClass());
 	}
 
 	public static Method getMethodByName(String name, Class<?> objectClass) {
@@ -122,64 +119,65 @@ public abstract class ClassUtil implements Serializable {
 		}
 		return null;
 	}
-	
+
 	public static boolean methodBelongsClass(Method method, Class<?> objectClass) {
 		List<Method> methods = getClassMethods(objectClass);
-		for(Method currentMethod : methods) {
-			if(currentMethod.equals(method)) {
+		for (Method currentMethod : methods) {
+			if (currentMethod.equals(method)) {
 				return true;
 			}
 		}
 		return false;
 	}
-	
+
 	public static boolean methodBelongsClass(Method method, Object object) {
 		return methodBelongsClass(method, object.getClass());
 	}
-	
-	public static List<Method> getClassMethods(Object object){
+
+	public static List<Method> getClassMethods(Object object) {
 		return getClassMethods(object.getClass());
 	}
-	
-	public static List<Method> getClassMethods(Class<?> objectClass){
+
+	public static List<Method> getClassMethods(Class<?> objectClass) {
 		return Arrays.asList(objectClass.getMethods());
 	}
 
 	// If name method contains . is because are a Chain of Method
 	public static List<Method> getChainGetters(String name, Class<?> objectClass) throws Exception {
-		
+
 		// Check if is a CHAIN
 		boolean isChainMethod = isChainMethod(name);
-		
+
 		// If true
-		if(isChainMethod) {
+		if (isChainMethod) {
 			// Create a List<Method> to return
 			List<Method> methods = new ArrayList<Method>();
-			
+
 			// Split the name with POINT
 			String[] splitByPoint = name.split("\\.");
-			if(splitByPoint != null && splitByPoint.length > 0) {
+			if (splitByPoint != null && splitByPoint.length > 0) {
 				// Pass a Array to ArrayList Java Class
 				List<String> methodsNameSeparated = Arrays.asList(splitByPoint);
-				
+
 				// Start lastClassUsed with objectClass Paramter
-				Class<?> lastClass = objectClass; 
-				
+				Class<?> lastClass = objectClass;
+
 				// Do a while in all names methods on List<String> methodsNameSeparated
-				for(String currentMethodName : methodsNameSeparated) {
-					// Each Name Method, do the Verify if exists Get, passing lastClass Used and currentName of the Iterator
+				for (String currentMethodName : methodsNameSeparated) {
+					// Each Name Method, do the Verify if exists Get, passing lastClass Used and
+					// currentName of the Iterator
 					currentMethodName = verifyIfExistsGet(currentMethodName, lastClass);
-					
+
 					// Get Method and check if != null to get next class and add in the List return
 					Method currentMethod = lastClass.getMethod(currentMethodName);
-					if(currentMethod != null) {
+					if (currentMethod != null) {
 						lastClass = currentMethod.getReturnType();
 						methods.add(currentMethod);
 					}
 				}
 			}
 			return methods;
-		} 
+		}
 		// If not a Chain, create a List with a unique method
 		else {
 			name = verifyIfExistsGet(name, objectClass);
@@ -187,13 +185,13 @@ public abstract class ClassUtil implements Serializable {
 			return Arrays.asList(uniqueMethod);
 		}
 	}
-	
+
 	// If is a Chain return the first method
 	public static Method getFirstMethod(String name, Class<?> objectClass) throws Exception {
 		boolean isChainMethod = isChainMethod(name);
-		if(isChainMethod) {
+		if (isChainMethod) {
 			List<Method> allMethods = getChainGetters(name, objectClass);
-			if(allMethods != null && allMethods.size() > 0)
+			if (allMethods != null && allMethods.size() > 0)
 				return allMethods.get(0);
 		}
 		return objectClass.getMethod(name);
