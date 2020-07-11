@@ -19,7 +19,7 @@ public abstract class ComparatorFactory implements Serializable {
 		boolean firstValueIsNumber = filter.firstValueIsNumber();
 		
 		if(firstValueIsString)
-			return new EqualsComparator(filter);
+			return new EqualsComparator();
 		
 		else if(firstValueIsNumber)
 			return ComparatorFactory.getNumberComparator(filter);
@@ -30,12 +30,12 @@ public abstract class ComparatorFactory implements Serializable {
 	// Number can have EqualsComparator to (double equals another double value)
 	private static Comparator getNumberComparator(FilterBy filter) {
 		switch (filter.getComparator()) {
-			case Equals: return new EqualsComparator(filter);		
-			case GreaterThan: return new GreaterThanComparator(filter);
-			case LessThan: return new LessThanComparator(filter);
-			case GreaterThanOrEquals: return new GreaterThanOrEqualsComparator(filter);
-			case LessThanOrEquals: return new LessThanOrEqualsComparator(filter);			
-			default: return new EqualsComparator(filter);
+			case Equals: return new EqualsComparator();		
+			case GreaterThan: return new GreaterThanComparator();
+			case LessThan: return new LessThanComparator();
+			case GreaterThanOrEquals: return new GreaterThanOrEqualsComparator();
+			case LessThanOrEquals: return new LessThanOrEqualsComparator();			
+			default: return new EqualsComparator();
 		}
 	}
 	

@@ -1,16 +1,12 @@
 package br.com.rafawhite.comparators;
 
-import br.com.rafawhite.dto.FilterBy;
+import br.com.rafawhite.interfaces.Comparator;
 import br.com.rafawhite.util.Util;
 
-public class GreaterThanOrEqualsComparator extends ComparatorImpl {
+public class GreaterThanOrEqualsComparator implements Comparator {
 
 	private static final long serialVersionUID = 1L;
 	
-	public GreaterThanOrEqualsComparator(FilterBy filter) {
-		super(filter);
-	}
-
 	@Override
 	public boolean compare(Object currentValue, Object invoked) {
 		double currentDoubleValue = Util.parseObjectToDouble(currentValue).doubleValue();

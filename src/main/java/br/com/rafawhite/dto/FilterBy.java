@@ -63,6 +63,7 @@ public class FilterBy implements Serializable {
 		this.comparator = comparator;
 	}
 	
+	// Check if First Value is Number Instance
 	public boolean firstValueIsNumber() {
 		if(values != null && values.size() > 0) {
 			return (values.get(0) instanceof Number);
@@ -70,6 +71,7 @@ public class FilterBy implements Serializable {
 		return false;
 	}
 	
+	// Check if First Value is String Instance
 	public boolean firstValueIsString() {
 		if(values != null && values.size() > 0) {
 			return (values.get(0) instanceof String);
