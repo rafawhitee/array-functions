@@ -72,9 +72,9 @@ public abstract class ArrayUtil implements Serializable {
 
 			// Reduce again listPredicates with an unique Predicate<T>
 			Stream<Predicate<?>> streamPredicate = listPredicates.stream();
-			Predicate predicateReduce = streamPredicate.reduce(p -> true, Predicate::and);
+			Predicate<?> predicateReduce = streamPredicate.reduce(p -> true, Predicate::and);
 
-			Stream<?> mainListStream = mainList.stream();
+			Stream mainListStream = mainList.stream();
 			List<?> filtered = (List<?>) mainListStream.filter(predicateReduce).collect(Collectors.toList());
 			return filtered;
 
@@ -165,6 +165,7 @@ public abstract class ArrayUtil implements Serializable {
 	}
 
 	// Do the grouping
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private static Map<List<?>, ?> groupByFields(List<?> mainList, String... fields) throws Exception {
 		Map<List<?>, ?> grouped = null;
 
@@ -183,14 +184,14 @@ public abstract class ArrayUtil implements Serializable {
 			List<Method> methods = populateListMethods(mainClass, listFields);
 
 			// Pass a MainList to Stream
-			Stream<?> stream = mainList.stream();
+			Stream stream = mainList.stream();
 
 			// Call createFunctionWithAllMethodsInvoked to create a Function with all
 			// methods invoked
 			Function<Object, List<Object>> compositeKey = createFunctionWithAllMethodsInvoked(methods);
 
 			// Use the collect of Stream to groupingBy compositeKey and the returns a List
-			grouped = stream.collect(Collectors.groupingBy(compositeKey, Collectors.toList()));
+			grouped = (Map<List<?>, ?>) stream.collect(Collectors.groupingBy(compositeKey, Collectors.toList()));
 
 		}
 

@@ -3,6 +3,7 @@ package br.com.rafawhite.util;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.concurrent.ThreadLocalRandom;
 
 public abstract class MathUtil implements Serializable {
 
@@ -54,6 +55,23 @@ public abstract class MathUtil implements Serializable {
 			return bigDivideResult.multiply(new BigDecimal("100"));
 		}
 		return bigDivideResult;
+	}
+	
+	public static int randomIntNumber(int min, int max) {
+		if(max == Integer.MAX_VALUE)
+			return ThreadLocalRandom.current().nextInt(min, max);
+		
+		return ThreadLocalRandom.current().nextInt(min, max + 1);
+	}
+
+	public static double randomDoubleNumber(double min, double max) {
+		return ThreadLocalRandom.current().nextDouble(min, max);
+	}
+	
+	public static double formatDouble(double value, int numberOfFloats) {
+		String patternToFormat = "%."+numberOfFloats+"f";
+		String formatted = String.format(patternToFormat, value).replace(",", ".");
+		return Double.valueOf(formatted);
 	}
 	
 	// Return true if the numbers are valide to divide 
