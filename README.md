@@ -29,7 +29,7 @@ Os tipos para comparar são: <b> Equals, LessThan, GreaterThan, LessThanOrEquals
 // Vai filtrar as pessoas que tem idade igual a 19 anos
 FilterBy filterEqualsAge = new FilterBy("age", ComparatorType.Equals, 19);
 List<People> filteredEqualsAge = (List<People>) ArrayUtil.filterByFields(peoples, filterEqualsAge);
-System.out.println("Total: " + filteredEqualsAge.size());
+System.out.println("Total Equals Age: " + filteredEqualsAge.size());
 ```
 
 #### Less Than
@@ -37,15 +37,15 @@ System.out.println("Total: " + filteredEqualsAge.size());
 // Vai filtrar as pessoas que tem idade menor que 19 anos
 FilterBy filterLessThanAge = new FilterBy("age", ComparatorType.LessThan, 19);
 List<People> filteredLessThanAge = (List<People>) ArrayUtil.filterByFields(peoples, filterLessThanAge);
-System.out.println("Total: " + filteredLessThanAge.size());
+System.out.println("Total LessThan Age: " + filteredLessThanAge.size());
 ```
 
-#### Greather Than
+#### Greater Than
 ```java
 // Vai filtrar as pessoas que tem idade maior que 19 anos
 FilterBy filterGreaterThanAge = new FilterBy("age", ComparatorType.GreaterThan, 19);
 List<People> filteredGreaterThanAge = (List<People>) ArrayUtil.filterByFields(peoples, filterGreaterThanAge);
-System.out.println("Total: " + filteredGreaterThanAge.size());
+System.out.println("Total GreaterThan Age: " + filteredGreaterThanAge.size());
 ```
 
 #### Less Than or Equals
@@ -53,7 +53,7 @@ System.out.println("Total: " + filteredGreaterThanAge.size());
 // Vai filtrar as pessoas que tem idade menor ou igual a 19 anos
 FilterBy filterLessThanOrEqualsAge = new FilterBy("age", ComparatorType.LessThanOrEquals, 19);
 List<People> filteredLessThanOrEqualsAge = (List<People>) ArrayUtil.filterByFields(peoples, filterLessThanOrEqualsAge);
-System.out.println("Total: " + filteredLessThanOrEqualsAge.size());
+System.out.println("Total LessThanOrEquals Age: " + filteredLessThanOrEqualsAge.size());
 ```
 
 #### Greather Than or Equals
@@ -61,5 +61,8 @@ System.out.println("Total: " + filteredLessThanOrEqualsAge.size());
 // Vai filtrar as pessoas que tem idade maior ou igual a 19 anos
 FilterBy filterGreaterThanOrEquals = new FilterBy("age", ComparatorType.GreaterThanOrEquals, 19);
 List<People> filteredGreaterThanOrEquals = (List<People>) ArrayUtil.filterByFields(peoples, filterGreaterThanOrEquals);
-System.out.println("Total: " + filteredGreaterThanOrEquals.size());
+System.out.println("Total GreaterThanOrEquals Age: " + filteredGreaterThanOrEquals.size());
 ```
+
+# LICENSE
+[MIT](https://github.com/rafawhitee/array-functions/blob/master/LICENSE.txt)
