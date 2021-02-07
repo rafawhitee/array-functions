@@ -1,4 +1,5 @@
-# Funções para Filtrar e Agrupar Listas com Lambda
+# Array Functions 
+Funções para Filtrar e Agrupar Listas com Lambda
 
 # Usage
 Classe pessoa utilizada para os testes e exemplo:
@@ -19,8 +20,8 @@ private Profile profile;
 private Integer id;
 private String description;
 ```
-### Tipos
-### Filtrando
+
+## Filtrando
 Os tipos para comparar são: <b> Equals, LessThan, GreaterThan, LessThanOrEquals, GressThanOrEquals </b>
 
 #### Equals
