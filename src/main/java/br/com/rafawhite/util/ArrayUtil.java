@@ -223,7 +223,7 @@ public abstract class ArrayUtil implements Serializable {
 	// Create a FunctionalInterface with all Methods Invoked by each element in
 	// mainList
 	private static Function<Object, List<Object>> createFunctionWithAllMethodsInvoked(List<Method> methods) {
-		Function<Object, List<Object>> compositeKey = obj -> {
+		Function<Object, List<Object>> compositeKey = (obj) -> {
 			List<Object> methodsInvokeds = new ArrayList<Object>();
 			for (Method currentMethod : methods) {
 				try {
@@ -243,10 +243,8 @@ public abstract class ArrayUtil implements Serializable {
 		for (String field : listFields) {
 			try {
 				Method newMethod = mainClass.getMethod(ClassUtil.verifyIfExistsGet(field, mainClass));
-				if (newMethod != null && !methods.contains(newMethod)) {
+				if (newMethod != null && !methods.contains(newMethod)) 
 					methods.add(newMethod);
-				}
-
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
