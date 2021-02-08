@@ -64,5 +64,30 @@ List<People> filteredGreaterThanOrEquals = (List<People>) ArrayUtil.filterByFiel
 System.out.println("Total GreaterThanOrEquals Age: " + filteredGreaterThanOrEquals.size());
 ```
 
+#### Filtrando com Atributos de Relacionamento
+Você pode colocar no parâmetro do atributo, nome de atributos que são relacionamentos entre classe também, como por exemplo a classe People tem declarado um Profile com ID e Description, eu quero filtrar pela description, ficando: <b> profile.description </b>. Similiar aos Root que a Criteria JPA utiliza para fazer queries dinâmicas.
+<b> Exemplos: </b>
+```java
+// Filtrando por profile.description === "ADMINISTRADOR"
+FilterBy filterWithHierarchy = new FilterBy("profile.description", ComparatorType.Equals, ProfileType.Administrador.toString());
+List<People> filteredByPerfilDescriptionAdmin = (List<People>) ArrayUtil.filterByFields(peoples, filterWithHierarchy);
+System.out.println("Total Equals Perfil.Description ADMIN: " + filteredByPerfilDescriptionAdmin.size());
+			
+// Filtrando por profile.description === "CLIENTE"
+filterWithHierarchy = new FilterBy("profile.description", ComparatorType.Equals, ProfileType.Cliente.toString());
+List<People> filteredByPerfilDescriptionCliente = (List<People>) ArrayUtil.filterByFields(peoples, filterWithHierarchy);
+System.out.println("Total Equals Perfil.Description CLIENTE: " + filteredByPerfilDescriptionCliente.size());
+		
+// Filtrando por profile.description === "GERENTE"
+filterWithHierarchy = new FilterBy("profile.description", ComparatorType.Equals, ProfileType.Gerente.toString());
+List<People> filteredByPerfilDescriptionGerente = (List<People>) ArrayUtil.filterByFields(peoples, filterWithHierarchy);
+System.out.println("Total Equals Perfil.Description GERENTE: " + filteredByPerfilDescriptionGerente.size());
+			
+// Filtrando por profile.description === "VENDEDOR"
+filterWithHierarchy = new FilterBy("profile.description", ComparatorType.Equals, ProfileType.Vendedor.toString());
+List<People> filteredByPerfilDescriptionVendedor = (List<People>) ArrayUtil.filterByFields(peoples, filterWithHierarchy);
+System.out.println("Total Equals Perfil.Description VENDEDOR: " + filteredByPerfilDescriptionVendedor.size());
+```
+
 # LICENSE
 [MIT](https://github.com/rafawhitee/array-functions/blob/master/LICENSE.txt)
