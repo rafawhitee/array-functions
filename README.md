@@ -2,6 +2,8 @@
 Funções para Filtrar e Agrupar Listas com Lambda
 
 # Usage
+
+## Classes
 Classe pessoa utilizada para os testes e exemplo:
 
 <b> Classe People </b>
@@ -19,6 +21,33 @@ private Profile profile;
 ```java
 private Integer id;
 private String description;
+```
+
+## Projeto Teste
+Para verificar o Projeto de Teste utilizado para esses exemplos [Clique Aqui](www.google.com)
+
+## Agrupando
+Você pode agrupar por vários atributos, basta chamar o método <b> groupBy </b> ou <b> groupByWithMapReturn </b>
+<b> Exemplos </b>
+
+##### Agrupando com groupBy normal, que retorna uma Lista de GroupResult.
+Classe GroupResult Atributos
+```java
+public static final String INITIAL_DESCRIPTION_GROUPED_BY = "Grouped by ";
+private String description;
+private List<?> values;
+```
+
+```java
+// Agrupará por Idade
+// Um Exemplo é Description: Grouped by age: 18 e values são as instâncias que tem a idade igual a 18.
+List<GroupResult> agrupandoPorAge = ArrayUtil.groupBy(peoples, "age");
+```
+
+##### Agrupando com retorno da java.util.Map
+```java
+// Retorna um Mapa com Key de Lista e segundo parâmetro são os valores (instâncias com os valores daquele current agrupamento)
+Map<List<?>, ?> agrupadoPorAgeWithMapReturn = ArrayUtil.groupByWithMapReturn(peoples, "age");
 ```
 
 ## Filtrando
