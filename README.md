@@ -2,6 +2,8 @@
 Funções para Filtrar e Agrupar Listas com Lambda
 
 # Usage
+
+## Classes
 Classe pessoa utilizada para os testes e exemplo:
 
 <b> Classe People </b>
@@ -21,6 +23,33 @@ private Integer id;
 private String description;
 ```
 
+## Projeto Teste
+Para verificar o Projeto de Teste utilizado para esses exemplos [Clique Aqui](www.google.com)
+
+## Agrupando
+Você pode agrupar por vários atributos, basta chamar o método <b> groupBy </b> ou <b> groupByWithMapReturn </b>
+<b> Exemplos </b>
+
+##### Agrupando com groupBy normal, que retorna uma Lista de GroupResult.
+Classe GroupResult Atributos
+```java
+public static final String INITIAL_DESCRIPTION_GROUPED_BY = "Grouped by ";
+private String description;
+private List<?> values;
+```
+
+```java
+// Agrupará por Idade
+// Um Exemplo é Description: Grouped by age: 18 e values são as instâncias que tem a idade igual a 18.
+List<GroupResult> agrupandoPorAge = ArrayUtil.groupBy(peoples, "age");
+```
+
+##### Agrupando com retorno da java.util.Map
+```java
+// Retorna um Mapa com Key de Lista e segundo parâmetro são os valores (instâncias com os valores daquele current agrupamento)
+Map<List<?>, ?> agrupadoPorAgeWithMapReturn = ArrayUtil.groupByWithMapReturn(peoples, "age");
+```
+
 ## Filtrando
 Os tipos para comparar são: <b> Equals, LessThan, GreaterThan, LessThanOrEquals, GressThanOrEquals </b>
 
@@ -29,7 +58,7 @@ Os tipos para comparar são: <b> Equals, LessThan, GreaterThan, LessThanOrEquals
 // Vai filtrar as pessoas que tem idade igual a 19 anos
 FilterBy filterEqualsAge = new FilterBy("age", ComparatorType.Equals, 19);
 List<People> filteredEqualsAge = (List<People>) ArrayUtil.filterByFields(peoples, filterEqualsAge);
-System.out.println("Total: " + filteredEqualsAge.size());
+System.out.println("Total Equals Age: " + filteredEqualsAge.size());
 ```
 
 #### Less Than
@@ -37,15 +66,15 @@ System.out.println("Total: " + filteredEqualsAge.size());
 // Vai filtrar as pessoas que tem idade menor que 19 anos
 FilterBy filterLessThanAge = new FilterBy("age", ComparatorType.LessThan, 19);
 List<People> filteredLessThanAge = (List<People>) ArrayUtil.filterByFields(peoples, filterLessThanAge);
-System.out.println("Total: " + filteredLessThanAge.size());
+System.out.println("Total LessThan Age: " + filteredLessThanAge.size());
 ```
 
-#### Greather Than
+#### Greater Than
 ```java
 // Vai filtrar as pessoas que tem idade maior que 19 anos
 FilterBy filterGreaterThanAge = new FilterBy("age", ComparatorType.GreaterThan, 19);
 List<People> filteredGreaterThanAge = (List<People>) ArrayUtil.filterByFields(peoples, filterGreaterThanAge);
-System.out.println("Total: " + filteredGreaterThanAge.size());
+System.out.println("Total GreaterThan Age: " + filteredGreaterThanAge.size());
 ```
 
 #### Less Than or Equals
@@ -53,7 +82,7 @@ System.out.println("Total: " + filteredGreaterThanAge.size());
 // Vai filtrar as pessoas que tem idade menor ou igual a 19 anos
 FilterBy filterLessThanOrEqualsAge = new FilterBy("age", ComparatorType.LessThanOrEquals, 19);
 List<People> filteredLessThanOrEqualsAge = (List<People>) ArrayUtil.filterByFields(peoples, filterLessThanOrEqualsAge);
-System.out.println("Total: " + filteredLessThanOrEqualsAge.size());
+System.out.println("Total LessThanOrEquals Age: " + filteredLessThanOrEqualsAge.size());
 ```
 
 #### Greather Than or Equals
@@ -61,5 +90,33 @@ System.out.println("Total: " + filteredLessThanOrEqualsAge.size());
 // Vai filtrar as pessoas que tem idade maior ou igual a 19 anos
 FilterBy filterGreaterThanOrEquals = new FilterBy("age", ComparatorType.GreaterThanOrEquals, 19);
 List<People> filteredGreaterThanOrEquals = (List<People>) ArrayUtil.filterByFields(peoples, filterGreaterThanOrEquals);
-System.out.println("Total: " + filteredGreaterThanOrEquals.size());
+System.out.println("Total GreaterThanOrEquals Age: " + filteredGreaterThanOrEquals.size());
 ```
+
+#### Filtrando com Atributos de Relacionamento
+Você pode colocar no parâmetro do atributo, nome de atributos que são relacionamentos entre classe também, como por exemplo a classe People tem declarado um Profile com ID e Description, eu quero filtrar pela description, ficando: <b> profile.description </b>. Similiar aos Root que a Criteria JPA utiliza para fazer queries dinâmicas.
+<b> Exemplos: </b>
+```java
+// Filtrando por profile.description === "ADMINISTRADOR"
+FilterBy filterWithHierarchy = new FilterBy("profile.description", ComparatorType.Equals, ProfileType.Administrador.toString());
+List<People> filteredByPerfilDescriptionAdmin = (List<People>) ArrayUtil.filterByFields(peoples, filterWithHierarchy);
+System.out.println("Total Equals Perfil.Description ADMIN: " + filteredByPerfilDescriptionAdmin.size());
+			
+// Filtrando por profile.description === "CLIENTE"
+filterWithHierarchy = new FilterBy("profile.description", ComparatorType.Equals, ProfileType.Cliente.toString());
+List<People> filteredByPerfilDescriptionCliente = (List<People>) ArrayUtil.filterByFields(peoples, filterWithHierarchy);
+System.out.println("Total Equals Perfil.Description CLIENTE: " + filteredByPerfilDescriptionCliente.size());
+		
+// Filtrando por profile.description === "GERENTE"
+filterWithHierarchy = new FilterBy("profile.description", ComparatorType.Equals, ProfileType.Gerente.toString());
+List<People> filteredByPerfilDescriptionGerente = (List<People>) ArrayUtil.filterByFields(peoples, filterWithHierarchy);
+System.out.println("Total Equals Perfil.Description GERENTE: " + filteredByPerfilDescriptionGerente.size());
+			
+// Filtrando por profile.description === "VENDEDOR"
+filterWithHierarchy = new FilterBy("profile.description", ComparatorType.Equals, ProfileType.Vendedor.toString());
+List<People> filteredByPerfilDescriptionVendedor = (List<People>) ArrayUtil.filterByFields(peoples, filterWithHierarchy);
+System.out.println("Total Equals Perfil.Description VENDEDOR: " + filteredByPerfilDescriptionVendedor.size());
+```
+
+# LICENSE
+[MIT](https://github.com/rafawhitee/array-functions/blob/master/LICENSE.txt)
