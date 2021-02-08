@@ -24,7 +24,7 @@ private String description;
 ```
 
 ## Projeto Teste
-Para verificar o Projeto de Teste utilizado para esses exemplos [Clique Aqui](www.google.com)
+Para verificar o Projeto de Teste utilizado para esses exemplos [Clique Aqui](https://github.com/rafawhitee/array-functions-test)
 
 ## Agrupando
 Você pode agrupar por vários atributos, basta chamar o método <b> groupBy </b> ou <b> groupByWithMapReturn </b>
