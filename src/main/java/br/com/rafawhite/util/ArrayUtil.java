@@ -31,10 +31,23 @@ public abstract class ArrayUtil implements Serializable {
 	// Do the groupByFields that returns a Map<List>?, ?>
 	// Get this return Map and parse do List<GroupResult> with a Description and
 	// List<?> values
+	public static Map<List<?>, ?> groupByWithMapReturn(List<?> mainList, String... fields) {
+		try {
+			return groupByFields(mainList, fields);		
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	// Intermediate Method
+	// Do the groupByFields that returns a Map<List>?, ?>
+	// Get this return Map and parse do List<GroupResult> with a Description and
+	// List<?> values
 	public static List<GroupResult> groupBy(List<?> mainList, String... fields) {
 		try {
 			List<GroupResult> list = new ArrayList<GroupResult>();
-			Map<List<?>, ?> map = groupByFields(mainList, fields);
+			Map<List<?>, ?> map = groupByWithMapReturn(mainList, fields);
 			if (map != null && map.size() > 0) {
 				Set<List<?>> keys = map.keySet();
 				if (keys != null && keys.size() > 0) {
@@ -243,7 +256,7 @@ public abstract class ArrayUtil implements Serializable {
 		for (String field : listFields) {
 			try {
 				Method newMethod = mainClass.getMethod(ClassUtil.verifyIfExistsGet(field, mainClass));
-				if (newMethod != null && !methods.contains(newMethod)) 
+				if (newMethod != null && !methods.contains(newMethod))
 					methods.add(newMethod);
 			} catch (Exception e) {
 				e.printStackTrace();
